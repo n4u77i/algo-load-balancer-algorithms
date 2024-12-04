@@ -11,7 +11,9 @@ serverRoutes.get('/', async (req: Request, res: Response) => {
     await new Promise((resolve) => {
         setTimeout(resolve, delay);
     })
-    res.send(`Request ${req.headers.count} served from server ${PORT.toString().slice(-1)}\n`);
+    res.send(
+        `[${new Date().toISOString()}]: Request ${req.get('count')} from address ${req.get('ipAddr')} served from server ${PORT.toString().slice(-1)}\n`
+    );
 });
 
 serverRoutes.get('/health', (req: Request, res: Response) => {
