@@ -14,3 +14,12 @@ export const servers = {
         if (s) return s
     })
 }
+
+export const serverStats: Record<string, Record<string, number>> = {};
+
+export const enum Algorithms {
+    RoundRobin = 'RoundRobin',
+    SourceIpHash = 'SourceIpHash',
+    LeastConnection = 'LeastConnection',
+    LeastResponseTime = 'LeastResponseTime',
+}

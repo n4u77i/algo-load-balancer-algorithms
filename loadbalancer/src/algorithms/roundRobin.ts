@@ -8,7 +8,7 @@ function* generator(): Generator<string | undefined> {
     }
 }
 
-export const nextBackend = (): string | undefined => {
+export const nextServer = (): string | undefined => {
     const { value, done } = iterator.next();
 
     if (done) {

@@ -1,12 +1,13 @@
 import { Request, Response, Router } from "express";
 import axios from 'axios';
 
-import { nextBackend } from "../algorithms/roundRobin";
-import { servers } from "../contants";
+import { servers, serverStats, Algorithms } from "../contants";
+import { nextBackend } from "../configLoadbalancer";
+import { releaseConnection } from "../algorithms/leastConnection";
+import { updateServerAvgResponseTime } from "../algorithms/leastResponseTime";
 
 export const backendRoutes = Router();
 
-const serverStats: Record<string, Record<string, number>> = {};
 servers.backends.forEach((server) => {
     if (server) {
         serverStats[server] = {
@@ -19,7 +20,10 @@ servers.backends.forEach((server) => {
 backendRoutes.get('/', async (req: Request, res: Response) => {
     try {
         const start = Date.now();
-        const server: string | undefined = nextBackend();
+
+        const LOAD_BALANCER = process.env.LOAD_BALANCER || '';
+        const server: string | undefined = LOAD_BALANCER === Algorithms.SourceIpHash 
+            ? nextBackend(LOAD_BALANCER, req?.headers?.ipAddr) : nextBackend(LOAD_BALANCER);
 
         if (!server) {
             res.status(503).send('No backend found');
@@ -36,6 +40,15 @@ backendRoutes.get('/', async (req: Request, res: Response) => {
         console.log(`>>> ${String(response.data).trimEnd()} in ${executionTimeInSecs} secs`)
         serverStats[server].totalRequests += 1;
         serverStats[server].totalProcessingTime += executionTimeInSecs;
+
+        if (LOAD_BALANCER === Algorithms.LeastConnection) {
+            releaseConnection(server);
+        }
+
+        if (LOAD_BALANCER === Algorithms.LeastResponseTime) {
+            const avgResponseTime = serverStats[server].totalProcessingTime / serverStats[server].totalRequests;
+            updateServerAvgResponseTime(server, avgResponseTime);
+        }
 
         if (!response.data) {
             console.log("Invalid response");
@@ -76,4 +89,10 @@ backendRoutes.get('/metrics', async (req: Request, res: Response) => {
         message += `Server ${serverName} served ${requests} request(s) with an average response time of ${avgResponseTime.toFixed(3)} secs\n`;
     }
     res.status(200).send(message);
+})
+
+backendRoutes.get('/health', async (req: Request, res: Response) => {
+    res.status(200).send(JSON.stringify({
+        status: "pass",
+    } + '\n'));
 })
