@@ -1,5 +1,5 @@
 import axios from "axios";
-import { HEALTH_CHECK_PATH, servers } from "./contants";
+import { HEALTH_CHECK_PATH, servers } from "./constants";
 
 const isHealthy = async (url: string): Promise<boolean> => {
     try {

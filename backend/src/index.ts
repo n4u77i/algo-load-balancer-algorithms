@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { PORT } from './contants';
+import { PORT } from './constants';
 import { routes } from './routes';
 
 const app = express();

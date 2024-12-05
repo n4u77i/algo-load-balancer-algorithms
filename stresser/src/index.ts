@@ -63,41 +63,44 @@ async function getMetrics() {
         }
     }
 }
+const sendRequest = async () => {
+    try {
+        const response = await axios.get(LOAD_BALANCER_URL);
 
-async function sendRequests() {
-    if (!await validUrl()) {
-        console.log('Invalid URL or Load Balancer not reachable');
-    }
+        if (!response.data) {
+            console.log("Internal Server Error");
+        }
 
-    for (let i = 0; i < NUMBER_OF_REQUESTS; i++) {
-        try {
-            const response = await axios.get(LOAD_BALANCER_URL);
-
-            if (!response.data) {
-                console.log("Internal Server Error");
-            }
-
-            console.log(response.data.trim());
-        } catch (error) {
-            if (axios.isAxiosError(error)) {
-                console.error("Axios Error:", error.message);
-          
-                if (error.code === "ECONNREFUSED") {
-                    console.log("Server is unavailable (connection refused)\n");
-                } else if (error.response) {
-                    // The server responded with a status code outside the 2xx range
-                    console.log(`${error.response.data}\n` || "Error from server\n");
-                } else {
-                    console.log("Internal Server Error\n");
-                }
+        console.log(response.data.trim());
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            console.error("Axios Error:", error.message);
+      
+            if (error.code === "ECONNREFUSED") {
+                console.log("Server is unavailable (connection refused)\n");
+            } else if (error.response) {
+                // The server responded with a status code outside the 2xx range
+                console.log(`${error.response.data}\n` || "Error from server\n");
             } else {
-                // Handle non-Axios errors
-                console.log("Unexpected error occurred\n");
+                console.log("Internal Server Error\n");
             }
+        } else {
+            // Handle non-Axios errors
+            console.log("Unexpected error occurred\n");
         }
     }
+};
+
+async function sendMultipleRequests() {
+    const requests = [];
+    for (let i = 1; i <= NUMBER_OF_REQUESTS; i++) {
+        requests.push(sendRequest());
+    }
+
+    await Promise.all(requests); // Wait for all requests to finish
+    console.log('All requests have been sent.');
 
     await getMetrics();
 }
 
-sendRequests();
+sendMultipleRequests()

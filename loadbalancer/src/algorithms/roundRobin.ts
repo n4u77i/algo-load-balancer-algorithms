@@ -1,4 +1,4 @@
-import { servers } from "../contants";
+import { servers } from "../constants";
 
 let iterator = generator();
 

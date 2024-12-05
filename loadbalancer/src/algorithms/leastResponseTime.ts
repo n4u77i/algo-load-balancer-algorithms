@@ -1,4 +1,4 @@
-import { servers } from "../contants";
+import { servers } from "../constants";
 
 const serversResponseTimes: Array<Record<string, any> | undefined> = servers.backends.map(s => {
     if (s) {

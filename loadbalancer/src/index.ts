@@ -2,7 +2,7 @@ import express from "express";
 
 import { routes } from "./routes";
 import { healthChecks } from "./healthCheck";
-import { HEALTH_CHECK_INTERVAL } from "./contants";
+import { HEALTH_CHECK_INTERVAL } from "./constants";
 import { requestsCounter } from "./middlewares/counter";
 import { addIpAddrHeader } from "./middlewares/ip";
 
