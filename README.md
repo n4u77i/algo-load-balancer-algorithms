@@ -34,18 +34,21 @@ This project implements a load balancer with support for multiple algorithms, in
 
 #### Start Backend Servers
 
-Launch the backend servers on desired ports:
+1. Navigate to the directory `cd backend/`
+2. Launch the backend servers on desired ports:
 
 ```bash
-node server.js --port=3001
-node server.js --port=3002
-node server.js --port=3003
-node server.js --port=3004
+npm run dev 3001
+npm run dev 3002
+npm run dev 3003
+npm run dev 3004
+npm run dev 3005
 ```
 
 #### Run the Load Balancer
 
-Start the load balancer and specify a port:
+1. Navigate to the directory `cd loadbalancer/`
+2. Start the load balancer and specify a port:
 
 ```bash
 npm run dev 8080
@@ -136,24 +139,24 @@ ab -n 1000 -c 10 "http://localhost:8080?algo=RoundRobin"
 - **Round Robin**:
 
   ```bash
-  curl http://localhost:8080?algo=RoundRobin
+  curl http://localhost:8080/?algo=RoundRobin
   ```
 
 - **Least Connection**:
 
   ```bash
-  curl http://localhost:8080?algo=LeastConnection
+  curl http://localhost:8080/?algo=LeastConnection
   ```
 
 - **Least Response Time**:
 
   ```bash
-  curl http://localhost:8080?algo=LeastResponseTime
+  curl http://localhost:8080/?algo=LeastResponseTime
   ```
 
 - **Source IP Hash**:
   ```bash
-  curl http://localhost:8080?algo=SourceIpHash
+  curl http://localhost:8080/?algo=SourceIpHash
   ```
 
 ---

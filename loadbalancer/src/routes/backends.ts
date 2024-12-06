@@ -16,12 +16,15 @@ servers.backends.forEach((server) => {
         };
     }
 });
+
 backendRoutes.get('/', async (req: Request, res: Response) => {
     try {
         const start = Date.now();
 
         // Determine load balancing algorithm
-        const LOAD_BALANCER = ['RoundRobin', 'LeastConnection', 'LeastResponseTime', 'SourceIpHash'].includes(req.query.algo as string)
+        const LOAD_BALANCER = [
+            'RoundRobin', 'LeastConnection', 'LeastResponseTime', 'SourceIpHash'
+        ].includes(req.query.algo as string)
             ? req.query.algo as string
             : 'RoundRobin';
 
@@ -89,7 +92,6 @@ backendRoutes.get('/', async (req: Request, res: Response) => {
     }
 });
 
-
 backendRoutes.get('/metrics', async (req: Request, res: Response) => {
     let message = '';
     for (const [server, metrics] of Object.entries(serverStats)) {
@@ -104,6 +106,7 @@ backendRoutes.get('/metrics', async (req: Request, res: Response) => {
     }
     res.status(200).send(message);
 })
+
 backendRoutes.get('/reset-metrics', async (req: Request, res: Response) => {
     servers.backends.forEach((server) => {
         if (server) {
